@@ -6,6 +6,7 @@ import { middlewareLogger } from "./middlewares/logger/logger.js"
 import { initializePassport } from "./config/passport.config.js"
 import { router as usersRouter } from "./routes/users.router.js"
 import { router as productsRouter } from "./routes/products.router.js"
+import { router as cartsRouter } from "./routes/carts.router.js"
 
 const app = express()
 
@@ -18,6 +19,7 @@ app.use(passport.initialize())
 
 app.use("/api/users", usersRouter)
 app.use("/api/products", productsRouter)
+app.use("/api/carts", cartsRouter)
 
 mongoose.connect(process.env.MONGO_URL)
     .then(() => {
