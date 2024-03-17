@@ -27,7 +27,7 @@ export const createProductsController = async (req, res) => {
 
     let result = await productsService.createProductsDAO(productData)
     if (!result) return res.status(404).send("Cannot create products")
-    res.send({ status: "success", payload: result })
+    res.status(200).send({ status: "success", payload: result })
 }
 
 export const getProductsController = async (req, res) => {
@@ -79,7 +79,7 @@ export const getProductsByIdController = async (req, res) => {
         let pid = req.params.pid
         let result = await productsService.getProductsByIdDAO(pid)
         if (!result) return res.status(404).send("Cannot get products with this id because doesn´t exists")
-        res.send({ status: "success", payload: result })
+        res.status(200).send({ status: "success", payload: result })
     }
     catch (err) {
         res.status(500).send("Server error: " + err)
@@ -94,7 +94,7 @@ export const updateProductsController = async (req, res) => {
         if (!productReplace.title || !productReplace.description || !productReplace.price || !productReplace.thumbnail || !productReplace.code || !productReplace.stock || !productReplace.category) return res.status(400).send({ status: "error", error: "Incomplete values" })
         let result = await productsService.updateProductsDAO({ _id: pid }, productReplace)
         if (!result) return res.status(404).send("The product with this Id cannot be updated because it does not exist")
-        res.send({ status: "success", payload: result })
+        res.status(200).send({ status: "success", payload: result })
     }
     catch (err) {
         res.status(500).send("Server error: " + err)
@@ -118,7 +118,7 @@ export const deleteProductsController = async (req, res) => {
             return res.status(404).send("The product with this Id cannot be deleted because it does not exist");
         }
 
-        res.send({ status: "success", payload: result });
+        res.status(200).send({ status: "success", payload: result });
     } catch (err) {
         res.status(500).send("Server error: " + err);
     }
