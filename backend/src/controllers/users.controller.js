@@ -1,8 +1,10 @@
 import Users from "../dao/classes/users.dao.js";
 import jwt from "jsonwebtoken";
 import { createHash, isValidPassword } from "../utils.js";
+import Carts from "../dao/classes/carts.dao.js";
 
 const usersService = new Users()
+const cartsService = new Carts()
 
 export const registerUserController = async (req, res) => {
     try {
@@ -29,6 +31,10 @@ export const registerUserController = async (req, res) => {
         }
 
         let result = await usersService.createUserDAO(userData);
+
+        const userCart = await cartsService.createCartsDao()
+        result.carts.push(userCart._id)
+        await result.save()
 
         res.status(201).send({ status: "success", payload: result })
     }

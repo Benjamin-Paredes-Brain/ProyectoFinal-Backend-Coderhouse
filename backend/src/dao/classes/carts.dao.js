@@ -34,7 +34,10 @@ export default class Carts {
     getCartsByIdDAO = async (cid) => {
         try {
             let result = await cartsModel.findById({ _id: cid }).populate('products.product');
-            if (!result) return null
+            if (!result) {
+                this.logger.info(`Cart with id ${cid} don´t found`)
+                return null
+            }
             this.logger.info(`Cart with id ${cid} successfully retrieved`)
             return result;
         }
@@ -44,25 +47,6 @@ export default class Carts {
         }
     }
 
-    // updateCartsDAO = async (cid, productsUpdate) => {
-    //     try {
-    //         let result = await cartsModel.findByIdAndUpdate(
-    //             cid,
-    //             {
-    //                 $set: {
-    //                     'products': productsUpdate,
-    //                 },
-    //             },
-    //             { new: true }
-    //         ).populate('products.product');
-    //         this.logger.info(`Cart with ID ${cid} updated successfully`);
-    //         return result;
-    //     } catch (error) {
-    //         this.logger.error(`Error while updating cart with ID ${cid}: ${error.message}`);
-    //         return null;
-    //     }
-    // };
-
     deleteCartsDAO = async (cid) => {
         try {
             let result = await cartsModel.deleteOne({ _id: cid })
@@ -71,6 +55,65 @@ export default class Carts {
         }
         catch (error) {
             this.logger.error(`Error while deleting cart with id ${cid}: ${error.message}`)
+            return null;
+        }
+    }
+
+    updateProductQuantityInCartDAO = async (cid, pid, newQuantity) => {
+        try {
+            let cart = await this.getCartsByIdDAO(cid);
+
+            const existingProductIndex = cart.products.findIndex((p) => p.product.equals(pid));
+
+            if (existingProductIndex !== -1) {
+                if (newQuantity !== undefined) {
+                    cart.products[existingProductIndex].quantity = newQuantity;
+                } else {
+                    cart.products[existingProductIndex].quantity += 1;
+                }
+
+                if (newQuantity <= 0) {
+                    return null;
+                }
+            }
+            else {
+                cart.products.push({ product: pid, quantity: 1 });
+            }
+
+            let result = await cart.save();
+            this.logger.info(`Cart with ID ${cid} updated successfully`);
+            return result;
+        } catch (error) {
+            this.logger.error(`Error while updating product quantity in cart: ${error.message}`);
+            return null;
+        }
+    }
+
+    deleteProductFromCartDAO = async (cid, pid) => {
+        try {
+            let result = await cartsModel.findOneAndUpdate(
+                { _id: cid, 'products.product': pid },
+                { $pull: { 'products': { product: pid } } },
+                { new: true }
+            );
+            if (!result) return null;
+            this.logger.info(`Product with ID ${pid} removed from cart with ID ${cid}`);
+            return result;
+        } catch (error) {
+            this.logger.error(`Error while removing product with ID ${pid} from cart with ID ${cid}: ${error.message}`);
+            return null;
+        }
+    }
+
+    clearCartDAO = async (cid) => {
+        try {
+            let cart = await this.getCartsByIdDAO(cid)
+            cart.products = []
+            let result = await cart.save()
+            this.logger.info(`Cart with ID ${cid} successfully clear`);
+            return result;
+        } catch (error) {
+            this.logger.error(`Error while clearing cart with ID ${cid}: ${error.message}`);
             return null;
         }
     }

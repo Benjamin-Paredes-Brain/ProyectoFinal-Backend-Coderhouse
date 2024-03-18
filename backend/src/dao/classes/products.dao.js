@@ -21,7 +21,10 @@ export default class Products {
     getProductsByIdDAO = async (pid) => {
         try {
             let result = await productsModel.findById(pid);
-            if(!result) return null
+            if (!result) {
+                this.logger.info(`Product with ID ${pid} don´t found.`);
+                return null
+            }
             this.logger.info(`Product with ID ${pid} successfully retrieved.`);
             return result;
         } catch (error) {
