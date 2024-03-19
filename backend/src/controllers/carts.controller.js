@@ -142,3 +142,39 @@ export const clearCartController = async (req, res) => {
         res.status(500).send("Server Error: " + err);
     }
 }
+
+export const purchaseCartController = async (req, res) => {
+    try {
+        const cid = req.params.cid;
+
+        const cart = await cartsService.getCartsByIdDAO(cid);
+
+        const purchasedProducts = [];
+
+        for (const productInfo of cart.products) {
+            const productId = productInfo.product._id
+            const quantityInCart = productInfo.quantity;
+
+            await productsService.updateProductsStockDAO(productId, quantityInCart);
+
+            const product = await productsService.getProductsByIdDAO(productId);
+            if (product) {
+                purchasedProducts.push({
+                    pid: product._id,
+                    title: product.title,
+                    quantity: quantityInCart
+                });
+            }
+        }
+
+        await cartsService.clearCartDAO(cid);
+
+        if (purchasedProducts.length === 0) {
+            return res.status(404).send("Cannot purchase cart");
+        }
+
+        res.status(200).send({ status: "success", message:"Products purchased successfully", purchasedProducts });
+    } catch (err) {
+        res.status(500).send("Server Error: " + err);
+    }
+};

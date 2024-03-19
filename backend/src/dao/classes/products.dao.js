@@ -65,4 +65,18 @@ export default class Products {
             return null;
         }
     }
+
+    updateProductsStockDAO = async (pid, quantity) => {
+        try {
+            let product = await this.getProductsByIdDAO(pid)
+            if (!product) return res.status(404).send({ status: "error", message: "Product not found" });
+            product.stock -= quantity
+            let result = await product.save()
+            this.logger.info(`Product stock updated successfully.`);
+            return result;
+        } catch (error) {
+            this.logger.error(`Error updating stock of the product with ID ${pid}: ${error.message}`);
+            return null;
+        }
+    }
 }

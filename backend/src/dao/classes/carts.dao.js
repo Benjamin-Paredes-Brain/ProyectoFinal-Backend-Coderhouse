@@ -63,6 +63,10 @@ export default class Carts {
         try {
             let cart = await this.getCartsByIdDAO(cid);
 
+            if (!cart) {
+                return res.status(404).send({ status: "error", message: "Cart not found" });
+            }
+
             const existingProductIndex = cart.products.findIndex((p) => p.product.equals(pid));
 
             if (existingProductIndex !== -1) {
@@ -108,6 +112,9 @@ export default class Carts {
     clearCartDAO = async (cid) => {
         try {
             let cart = await this.getCartsByIdDAO(cid)
+            if (!cart) {
+                return res.status(404).send({ status: "error", message: "Cart not found" });
+            }
             cart.products = []
             let result = await cart.save()
             this.logger.info(`Cart with ID ${cid} successfully clear`);
