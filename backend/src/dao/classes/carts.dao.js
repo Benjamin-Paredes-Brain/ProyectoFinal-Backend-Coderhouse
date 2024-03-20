@@ -93,6 +93,25 @@ export default class Carts {
         }
     }
 
+    updateCartsDAO = async (cid, productsUpdate) => {
+        try {
+            let result = await cartsModel.findByIdAndUpdate(
+                cid,
+                {
+                    $set: {
+                        'products': productsUpdate,
+                    },
+                },
+                { new: true }
+            ).populate('products.product');
+            this.logger.info(`Cart with ID ${cid} updated successfully`);
+            return result;
+        } catch (error) {
+            this.logger.error(`Error while updating cart with ID ${cid}: ${error.message}`);
+            return null;
+        }
+    };
+
     deleteProductFromCartDAO = async (cid, pid) => {
         try {
             let result = await cartsModel.findOneAndUpdate(

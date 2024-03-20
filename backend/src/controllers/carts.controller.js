@@ -9,7 +9,7 @@ export const createCartsController = async (req, res) => {
     try {
         const cartData = { products: [] }
         let result = await cartsService.createCartsDao(cartData)
-        if (!result) return res.status(404).send("Cannot create cart")
+        if (!result) return res.status(404).send({ status: "error", message: "Cannot create cart" })
         res.status(201).send({ status: "success", payload: result })
     }
     catch (error) {
@@ -20,7 +20,7 @@ export const createCartsController = async (req, res) => {
 export const getCartsController = async (req, res) => {
     try {
         let result = await cartsService.getCartsDAO()
-        if (!result) return res.status(404).send("Cannot get carts")
+        if (!result) return res.status(404).send({ status: "error", message: "Cannot get carts" })
         res.status(200).send({ status: "success", payload: result })
     }
     catch (err) {
@@ -32,7 +32,7 @@ export const getCartsByIdController = async (req, res) => {
     try {
         let cid = req.params.cid;
         let result = await cartsService.getCartsByIdDAO(cid)
-        if (!result) return res.status(404).send("Cannot get cart with this id because doesn´t exists")
+        if (!result) return res.status(404).send({ status: "error", message: "Cannot get cart with this id because doesn´t exists" })
         res.status(200).send({ status: "success", payload: result })
     } catch (err) {
         res.status(500).send("Server error: " + err)
@@ -47,7 +47,7 @@ export const updateCartsController = async (req, res) => {
         let result = await cartsService.updateCartsDAO(cid, productsUpdate);
 
         if (!result) {
-            return res.status(404).send("Cart not found");
+            return res.status(404).send({ status: "error", message: "Cart not found" });
         }
 
         res.status(200).send({ status: "success", payload: result });
@@ -60,7 +60,7 @@ export const deleteCartsController = async (req, res) => {
     try {
         let cid = req.params.cid
         let result = await cartsService.deleteCartsDAO({ _id: cid })
-        if (!result) return res.status(404).send("Cannot delete cart")
+        if (!result) return res.status(404).send({ status: "error", message: "Cannot delete cart" })
         res.status(200).send({ status: "success", payload: result })
     }
     catch (err) {
@@ -75,13 +75,13 @@ export const updateQuantityProductsInCartsController = async (req, res) => {
         let quantity = req.body.quantity;
 
         if (isNaN(quantity) || quantity <= 0) {
-            return res.status(400).send("Quantity must be a positive number");
+            return res.status(400).send({ status: "error", message: "Quantity must be a positive number" });
         }
 
         let result = await cartsService.updateProductQuantityInCartDAO(cid, pid, quantity);
 
         if (!result) {
-            return res.status(404).send("Product not found in the cart");
+            return res.status(404).send({ status: "error", message: "Product not found in the cart" });
         }
 
         res.status(200).send({ status: "success", payload: result });
@@ -98,13 +98,13 @@ export const addProductInCartController = async (req, res) => {
         let product = await productsService.getProductsByIdDAO(pid)
 
         if (!product) {
-            return res.status(404).send("Product not found");
+            return res.status(404).send({ status: "error", message: "Product not found" });
         }
 
         let result = await cartsService.updateProductQuantityInCartDAO(cid, pid);
 
         if (!result) {
-            return res.status(404).send("Cannot add product to cart");
+            return res.status(404).send({ status: "error", message: "Cannot add product to cart" });
         }
 
         res.status(200).send({ status: "success", payload: result });
@@ -121,7 +121,7 @@ export const deleteProductFromCartController = async (req, res) => {
         let result = await cartsService.deleteProductFromCartDAO(cid, pid);
 
         if (!result) {
-            return res.status(404).send("Cannot remove product from cart");
+            return res.status(404).send({ status: "error", message: "Cannot remove product from cart" });
         }
 
         res.status(200).send({ status: "success", payload: result });
@@ -136,7 +136,7 @@ export const clearCartController = async (req, res) => {
 
         let result = await cartsService.clearCartDAO(cid);
 
-        if (!result) return res.status(404).send("Cannot clear cart")
+        if (!result) return res.status(404).send({ status: "error", message: "Cannot clear cart" })
         res.status(200).send({ status: "success", payload: result });
     } catch (err) {
         res.status(500).send("Server Error: " + err);
@@ -170,10 +170,10 @@ export const purchaseCartController = async (req, res) => {
         await cartsService.clearCartDAO(cid);
 
         if (purchasedProducts.length === 0) {
-            return res.status(404).send("Cannot purchase cart");
+            return res.status(404).send({ status: "error", message: "Cannot purchase cart" });
         }
 
-        res.status(200).send({ status: "success", message:"Products purchased successfully", purchasedProducts });
+        res.status(200).send({ status: "success", message: "Products purchased successfully", purchasedProducts });
     } catch (err) {
         res.status(500).send("Server Error: " + err);
     }
