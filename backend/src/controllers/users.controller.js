@@ -1,4 +1,5 @@
 import Users from "../dao/classes/users.dao.js";
+import UserProfileDTO from "../dto/user.dto.js";
 import jwt from "jsonwebtoken";
 import { createHash, isValidPassword } from "../utils.js";
 import Carts from "../dao/classes/carts.dao.js";
@@ -32,9 +33,13 @@ export const registerUserController = async (req, res) => {
 
         let result = await usersService.createUserDAO(userData);
 
-        const userCart = await cartsService.createCartsDao()
-        result.carts.push(userCart._id)
-        await result.save()
+        if (result) {
+            const userCart = await cartsService.createCartsDao()
+            result.carts.push(userCart._id)
+            await result.save()
+        } else {
+            return res.status(400).send({ status: "error", message: "Cannot create user" })
+        }
 
         res.status(201).send({ status: "success", payload: result })
     }
@@ -63,7 +68,22 @@ export const loginUserController = async (req, res) => {
         const token = jwt.sign({ uid: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
         res.cookie("authCookie", token, { signed: true, httpOnly: true });
-        return res.status(200).send({ message: "Login successful" });
+        return res.status(200).send({ message: "Login successful", payload: token });
+    }
+    catch (err) {
+        res.status(500).send("Server error " + err);
+    }
+}
+
+export const getUserProfile = async (req, res) => {
+    try {
+        const uid = req.user._id;
+        const user = await usersService.getUserByIdDAO(uid);
+        if (!user) {
+            return res.status(404).send({ status: "error", message: "User not found" });
+        }
+        let result = new UserProfileDTO(req.user)
+        return res.status(200).send({ status: "success", payload: result });
     }
     catch (err) {
         res.status(500).send("Server error " + err);
