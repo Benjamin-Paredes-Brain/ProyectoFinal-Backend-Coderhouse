@@ -9,6 +9,7 @@ export default class Users {
     createUserDAO = async (userData) => {
         try {
             let result = await usersModel.create(userData)
+            if(!result) return null
             this.logger.info("User created successfully")
             return result;
         }
@@ -21,6 +22,7 @@ export default class Users {
     getUserByIdDAO = async (uid) => {
         try {
             let result = await usersModel.findById({ _id: uid })
+            if(!result) return null
             this.logger.info(`User with id ${uid} retrieved successfully`)
             return result;
         }
@@ -33,6 +35,7 @@ export default class Users {
     getUserByEmailDAO = async (email) => {
         try {
             let result = await usersModel.findOne({ email: email })
+            if(!result) return null
             this.logger.info(`User with email ${email} retrieved successfully`)
             return result;
         }
@@ -42,5 +45,44 @@ export default class Users {
         }
 
     }
-    
+
+    updateUserDAO = async (uid, userReplace) => {
+        try {
+            let result = await usersModel.updateOne({_id: uid}, userReplace)
+            if(!result) return null
+            this.logger.info(`User with id ${uid} updated successfully`)
+            return result;
+        }
+        catch (err) {
+            this.logger.error(`Error updating user with id ${uid}: ${err.message}`)
+            return null;
+        }
+    }
+
+    getUsersDAO = async () => {
+        try {
+            let result = await usersModel.find()
+            if(!result) return null
+            this.logger.info(`Users retrieved successfully`)
+            return result;
+        }
+        catch (err) {
+            this.logger.error(`Error retrieving users: ${err.message}`)
+            return null;
+        }
+    }
+
+    deleteUserDAO = async (uid) => {
+        try {
+            let result = await usersModel.deleteOne({ _id: uid })
+            if(!result) return null
+            this.logger.info(`User deleted successfully`)
+            return result;
+        }
+        catch (err) {
+            this.logger.error(`Error deleting user with id ${uid}: ${err.message}`)
+            return null;
+        }
+    }
+
 }

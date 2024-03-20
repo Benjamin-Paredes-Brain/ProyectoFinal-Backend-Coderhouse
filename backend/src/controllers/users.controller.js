@@ -66,8 +66,12 @@ export const loginUserController = async (req, res) => {
         }
 
         const token = jwt.sign({ uid: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        if (!token) {
+            return res.status(400).send({ status: "error", message: "Cannot login user" })
+        }
 
         res.cookie("authCookie", token, { signed: true, httpOnly: true });
+        req.logger.info(`User with email ${email} logged successfully`)
         return res.status(200).send({ message: "Login successful", payload: token });
     }
     catch (err) {
@@ -83,6 +87,49 @@ export const getUserProfile = async (req, res) => {
             return res.status(404).send({ status: "error", message: "User not found" });
         }
         let result = new UserProfileDTO(req.user)
+        if (!result) return res.status(404).send({ status: "error", message: "Cannot fetch user" })
+        return res.status(200).send({ status: "success", payload: result });
+    }
+    catch (err) {
+        res.status(500).send("Server error " + err);
+    }
+}
+
+export const updateUserController = async (req, res) => {
+    try {
+        const uid = req.params.uid
+        const userReplace = req.body.user
+        if(!userReplace) return res.status(404).send({ status: "error", error: "User fields to replace not found" })
+        if (!userReplace.email || !userReplace.first_name || !userReplace.last_name || !userReplace.age) return res.status(400).send({ status: "error", error: "Incomplete values" })
+        const user = await usersService.getUserByIdDAO(uid);
+        if (!user) {
+            return res.status(404).send({ status: "error", message: "User not found" });
+        }
+        let result = await usersService.updateUserDAO(uid, userReplace)
+        if (!result) return res.status(404).send({ status: "error", message: "The user with this Id cannot be updated because it does not exist" })
+        return res.status(200).send({ status: "success", payload: result });
+    }
+    catch (err) {
+        res.status(500).send("Server error " + err);
+    }
+}
+
+export const getUsersController = async (req, res) => {
+    try {
+        let result = await usersService.getUsersDAO()
+        if (!result) return res.status(404).send({ status: "error", message: "Cannot fetch users" })
+        return res.status(200).send({ status: "success", payload: result });
+    }
+    catch (err) {
+        res.status(500).send("Server error " + err);
+    }
+}
+
+export const deleteUserController = async (req, res) => {
+    try {
+        let uid = req.params.uid
+        let result = await usersService.deleteUserDAO(uid)
+        if (!result) return res.status(404).send({ status: "error", message: `Cannot delete user with id ${uid}` })
         return res.status(200).send({ status: "success", payload: result });
     }
     catch (err) {
