@@ -1,11 +1,12 @@
 import { Router } from "express"
 import { createCartsController, deleteCartsController, getCartsByIdController, getCartsController, addProductInCartController, clearCartController, deleteProductFromCartController, updateQuantityProductsInCartsController, purchaseCartController, updateCartsController} from "../controllers/carts.controller.js"
+import { authenticateJWTAndRole } from "../middlewares/auth/auth.JWT.Role.js"
 
 export const router = Router()
 
 router.post("/", createCartsController)
 router.post("/:cid/product/:pid", addProductInCartController)
-router.post("/purchase/:cid", purchaseCartController)
+router.post("/purchase/:cid", authenticateJWTAndRole("user"), purchaseCartController)
 
 router.get("/", getCartsController)
 router.get("/:cid", getCartsByIdController)

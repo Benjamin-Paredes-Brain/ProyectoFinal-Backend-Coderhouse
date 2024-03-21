@@ -1,9 +1,11 @@
 import Carts from "../dao/classes/carts.dao.js";
 import Products from "../dao/classes/products.dao.js"
+import Tickets from "../dao/classes/tickets.dao.js";
+import { generateRandomString } from "../utils.js";
 
 const cartsService = new Carts()
 const productsService = new Products()
-
+const ticketsService = new Tickets()
 
 export const createCartsController = async (req, res) => {
     try {
@@ -145,35 +147,66 @@ export const clearCartController = async (req, res) => {
 
 export const purchaseCartController = async (req, res) => {
     try {
+        const user = req.user;
         const cid = req.params.cid;
-
         const cart = await cartsService.getCartsByIdDAO(cid);
+        const purchaser = user.email;
 
         const purchasedProducts = [];
+        const productsWithNoStock = [];
+
+        let ticketAmount = 0;
+        cart.products.forEach(product => {
+            ticketAmount += product.product.price * product.quantity;
+        });
+
+        const ticketData = {
+            code: generateRandomString(16),
+            purchase_datetime: new Date(),
+            amount: ticketAmount,
+            purchaser: purchaser
+        };
 
         for (const productInfo of cart.products) {
-            const productId = productInfo.product._id
+            const productId = productInfo.product._id;
             const quantityInCart = productInfo.quantity;
 
-            await productsService.updateProductsStockDAO(productId, quantityInCart);
+            const stockUpdated = await productsService.updateProductsStockDAO(productId, quantityInCart);
 
-            const product = await productsService.getProductsByIdDAO(productId);
-            if (product) {
-                purchasedProducts.push({
-                    pid: product._id,
-                    title: product.title,
-                    quantity: quantityInCart
-                });
+            if (!stockUpdated) {
+                productsWithNoStock.push(productInfo.product);
+            } else {
+                const product = await productsService.getProductsByIdDAO(productId);
+                if (product) {
+                    purchasedProducts.push({
+                        pid: product._id,
+                        title: product.title,
+                        quantity: quantityInCart
+                    });
+                }
             }
         }
 
-        await cartsService.clearCartDAO(cid);
-
-        if (purchasedProducts.length === 0) {
-            return res.status(404).send({ status: "error", message: "Cannot purchase cart" });
+        if (purchasedProducts.length > 0) {
+            const productsToRemove = productsWithNoStock.map(product => product._id);
+            await cartsService.removeProductsFromCartDAO(cid, productsToRemove);
         }
 
-        res.status(200).send({ status: "success", message: "Products purchased successfully", purchasedProducts });
+        let ticket = await ticketsService.generateTicketsDAO(ticketData);
+
+        let additionalMessage = "";
+        if (productsWithNoStock.length > 0) {
+            additionalMessage = "Some products couldn't be purchased due to insufficient stock";
+        }
+
+        res.status(200).send({
+            status: "success",
+            message: "Products purchased successfully",
+            purchasedProducts: purchasedProducts,
+            info: additionalMessage,
+            productsWithNoStock: productsWithNoStock,
+            ticket: ticket
+        });
     } catch (err) {
         res.status(500).send("Server Error: " + err);
     }

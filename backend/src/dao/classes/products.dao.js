@@ -69,7 +69,11 @@ export default class Products {
     updateProductsStockDAO = async (pid, quantity) => {
         try {
             let product = await this.getProductsByIdDAO(pid)
-            if (!product) return res.status(404).send({ status: "error", message: "Product not found" });
+            if (!product) return null
+            if (product.stock < quantity) {
+                this.logger.error(`Product stock is not enough`);
+                return null
+            }
             product.stock -= quantity
             let result = await product.save()
             this.logger.info(`Product stock updated successfully.`);

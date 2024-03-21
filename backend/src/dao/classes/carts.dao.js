@@ -85,7 +85,7 @@ export default class Carts {
             }
 
             let result = await cart.save();
-            this.logger.info(`Cart with ID ${cid} updated successfully`);
+            this.logger.info(`Cart with ID ${cid} updated quantity successfully`);
             return result;
         } catch (error) {
             this.logger.error(`Error while updating product quantity in cart: ${error.message}`);
@@ -143,4 +143,22 @@ export default class Carts {
             return null;
         }
     }
+
+    removeProductsFromCartDAO = async (cid, productIds) => {
+        try {
+            let cart = await this.getCartsByIdDAO(cid);
+    
+            if (!cart) {
+                return null;
+            }
+            cart.products = cart.products.filter(product => !productIds.includes(product.product.toString()));
+            let result = await cart.save();
+            this.logger.info(`Products removed from cart with ID ${cid}`);
+            return result;
+        } catch (error) {
+            this.logger.error(`Error while removing products from cart with ID ${cid}: ${error.message}`);
+            return null;
+        }
+    }
+    
 }
