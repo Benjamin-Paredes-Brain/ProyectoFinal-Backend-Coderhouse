@@ -145,6 +145,7 @@ export const deleteUserController = async (req, res) => {
 export const logoutUserController = async (req, res) => {
     try {
         res.clearCookie("authCookie");
+        req.logger.info("User logout")
         return res.status(200).send({ status: "success", message: "Logout successful" });
     } catch (err) {
         return res.status(500).send({ status: "error", message: "Server error: " + err });

@@ -23,8 +23,9 @@ app.use("/api/products", productsRouter)
 app.use("/api/carts", cartsRouter)
 app.use("/api/tickets", ticketsRouter)
 
-mongoose.connect(process.env.MONGO_URL)
+mongoose.connect(process.env.ENV === "DEVELOPMENT" ? process.env.MONGO_URL_TEST : process.env.MONGO_URL)
     .then(() => {
+        process.env.ENV === "DEVELOPMENT" ? mongoose.connection.collection("users").drop() : null;
         console.log("Connected to the database");
     })
     .catch((error) => {
