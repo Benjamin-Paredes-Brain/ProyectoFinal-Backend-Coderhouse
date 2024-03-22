@@ -9,7 +9,7 @@ export default class Users {
     createUserDAO = async (userData) => {
         try {
             let result = await usersModel.create(userData)
-            if(!result) return null
+            if (!result) return null
             this.logger.info("User created successfully")
             return result;
         }
@@ -22,7 +22,7 @@ export default class Users {
     getUserByIdDAO = async (uid) => {
         try {
             let result = await usersModel.findById({ _id: uid })
-            if(!result) return null
+            if (!result) return null
             this.logger.info(`User with id ${uid} retrieved successfully`)
             return result;
         }
@@ -35,7 +35,7 @@ export default class Users {
     getUserByEmailDAO = async (email) => {
         try {
             let result = await usersModel.findOne({ email: email })
-            if(!result) return null
+            if (!result) return null
             this.logger.info(`User with email ${email} retrieved successfully`)
             return result;
         }
@@ -48,8 +48,8 @@ export default class Users {
 
     updateUserDAO = async (uid, userReplace) => {
         try {
-            let result = await usersModel.updateOne({_id: uid}, userReplace)
-            if(!result) return null
+            let result = await usersModel.updateOne({ _id: uid }, userReplace)
+            if (!result) return null
             this.logger.info(`User with id ${uid} updated successfully`)
             return result;
         }
@@ -62,7 +62,7 @@ export default class Users {
     getUsersDAO = async () => {
         try {
             let result = await usersModel.find()
-            if(!result) return null
+            if (!result) return null
             this.logger.info(`Users retrieved successfully`)
             return result;
         }
@@ -75,7 +75,7 @@ export default class Users {
     deleteUserDAO = async (uid) => {
         try {
             let result = await usersModel.deleteOne({ _id: uid })
-            if(!result) return null
+            if (!result) return null
             this.logger.info(`User deleted successfully`)
             return result;
         }
@@ -85,4 +85,16 @@ export default class Users {
         }
     }
 
+    updateUserConnectionDAO = async (uid) => {
+        try {
+            let result = await usersModel.findByIdAndUpdate(uid, { last_connection: new Date().toUTCString() })
+            if (!result) return null
+            this.logger.info(`User connection updated successfully`)
+            return result;
+        }
+        catch (err) {
+            this.logger.error(`Error updating user with id ${uid} connection: ${err.message}`)
+            return null;
+        }
+    }
 }

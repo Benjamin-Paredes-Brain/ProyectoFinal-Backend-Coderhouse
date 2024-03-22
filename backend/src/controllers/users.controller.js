@@ -3,6 +3,8 @@ import UserProfileDTO from "../dto/user.dto.js";
 import jwt from "jsonwebtoken";
 import { createHash, isValidPassword } from "../utils.js";
 import Carts from "../dao/classes/carts.dao.js";
+import moment from "moment"
+import { transporter } from "../services/mail/mailing.js";
 
 const usersService = new Users()
 const cartsService = new Carts()
@@ -72,6 +74,7 @@ export const loginUserController = async (req, res) => {
 
         res.cookie("authCookie", token, { signed: true, httpOnly: true });
         req.logger.info(`User with email ${email} logged successfully`)
+        await usersService.updateUserConnectionDAO(user._id)
         return res.status(200).send({ message: "Login successful", payload: token });
     }
     catch (err) {
@@ -99,7 +102,7 @@ export const updateUserController = async (req, res) => {
     try {
         const uid = req.params.uid
         const userReplace = req.body.user
-        if(!userReplace) return res.status(404).send({ status: "error", error: "User fields to replace not found" })
+        if (!userReplace) return res.status(404).send({ status: "error", error: "User fields to replace not found" })
         if (!userReplace.email || !userReplace.first_name || !userReplace.last_name || !userReplace.age) return res.status(400).send({ status: "error", error: "Incomplete values" })
         const user = await usersService.getUserByIdDAO(uid);
         if (!user) {
@@ -116,8 +119,10 @@ export const updateUserController = async (req, res) => {
 
 export const getUsersController = async (req, res) => {
     try {
-        let result = await usersService.getUsersDAO()
-        if (!result) return res.status(404).send({ status: "error", message: "Cannot fetch users" })
+        const users = await usersService.getUsersDAO()
+        if (!users) return res.status(404).send({ status: "error", message: "Cannot fetch users" })
+
+        let result = users.map(user => new UserProfileDTO(user))
         return res.status(200).send({ status: "success", payload: result });
     }
     catch (err) {
@@ -134,5 +139,53 @@ export const deleteUserController = async (req, res) => {
     }
     catch (err) {
         res.status(500).send("Server error " + err);
+    }
+}
+
+export const logoutUserController = async (req, res) => {
+    try {
+        res.clearCookie("authCookie");
+        return res.status(200).send({ status: "success", message: "Logout successful" });
+    } catch (err) {
+        return res.status(500).send({ status: "error", message: "Server error: " + err });
+    }
+}
+
+export const clearUsersController = async (req, res) => {
+    try {
+        const twoDaysAgo = moment().subtract(2, 'days');
+
+        const users = await usersService.getUsersDAO();
+
+        const inactiveUsers = users.filter(user => {
+            return moment(user.last_connection).isBefore(twoDaysAgo);
+        });
+
+        if (inactiveUsers.length === 0) {
+            return res.status(400).send({ status: "error", message: "There are no inactive users" });
+        }
+
+        for (const user of inactiveUsers) {
+            await usersService.deleteUserDAO(user._id);
+            const mailOptions = {
+                from: process.env.MAIL_USER,
+                to: user.email,
+                subject: 'Deleted account | BACKEND ECOMMERCE',
+                text: `our account has been deleted due to inactivity, you spent 2 days without any connection.`,
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    req.logger.error("Error sending mail" + error);
+                    return res.status(500).json({ status: 'error', message: 'Error to send email.' });
+                }
+                req.logger.info('Email sent: ' + info.response);
+                res.status(200).send({ status: 'success', message: 'Email sended succefully.' });
+            });
+        }
+
+        return res.status(200).send({ status: "success", message: "Inactive users cleared successfully", usersDeleted: inactiveUsers });
+    } catch (err) {
+        return res.status(500).send({ status: "error", message: "Server error: " + err });
     }
 }
