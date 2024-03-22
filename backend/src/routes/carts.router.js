@@ -6,7 +6,7 @@ export const router = Router()
 
 router.post("/", createCartsController)
 router.post("/:cid/product/:pid", addProductInCartController)
-router.post("/purchase/:cid", authenticateJWTAndRole("user"), purchaseCartController)
+router.post("/purchase/:cid", authenticateJWTAndRole(["user"]), purchaseCartController)
 
 router.get("/", getCartsController)
 router.get("/:cid", getCartsByIdController)

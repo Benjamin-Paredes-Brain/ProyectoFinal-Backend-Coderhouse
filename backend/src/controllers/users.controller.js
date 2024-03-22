@@ -171,7 +171,7 @@ export const clearUsersController = async (req, res) => {
                 from: process.env.MAIL_USER,
                 to: user.email,
                 subject: 'Deleted account | BACKEND ECOMMERCE',
-                text: `our account has been deleted due to inactivity, you spent 2 days without any connection.`,
+                text: `Your account has been deleted due to inactivity, you spent 2 days without any connection.`,
             };
 
             transporter.sendMail(mailOptions, (error, info) => {

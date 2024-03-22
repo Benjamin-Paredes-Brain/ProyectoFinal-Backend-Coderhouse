@@ -1,6 +1,6 @@
 import passport from "passport";
 
-export const authenticateJWTAndRole = (role) => {
+export const authenticateJWTAndRole = (roles) => {
     return (req, res, next) => {
         passport.authenticate('jwt', { session: false }, (err, user, info) => {
             if (err) {
@@ -9,7 +9,7 @@ export const authenticateJWTAndRole = (role) => {
             if (!user) {
                 return res.status(401).send({ error: info.messages ? info.messages : info.toString() });
             }
-            if (role && user.role !== role) {
+            if (roles && !roles.includes(user.role)) {
                 return res.status(403).send({ error: "No permissions" });
             }
             req.user = user;

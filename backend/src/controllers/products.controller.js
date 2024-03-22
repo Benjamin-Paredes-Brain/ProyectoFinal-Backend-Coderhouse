@@ -1,10 +1,13 @@
 import Products from "../dao/classes/products.dao.js"
 import { getPrevLink, getNextLink } from "../utils.js"
+import { transporter } from "../services/mail/mailing.js"
 
 const productsService = new Products()
 
 export const createProductsController = async (req, res) => {
-    let { title, description, price, thumbnail, code, stock, category, owner } = req.body
+    const user = req.user;
+    let { title, description, price, thumbnail, code, stock, category, owner } = req.body;
+    let productData;
 
     if (!title || !description || !price || !thumbnail || !code || !stock || !category) {
         return res.status(400).send({ status: "error", message: "Incomplete fields" });
@@ -19,19 +22,32 @@ export const createProductsController = async (req, res) => {
         return res.status(400).send({ status: "error", message: `Product with this code ${code} already exists (the code cannot be repeated)` })
     }
 
-    const productData = {
-        title,
-        description,
-        price,
-        thumbnail,
-        code,
-        stock,
-        category,
-        owner
+    if (user.role === "premium") {
+        productData = {
+            title,
+            description,
+            price,
+            thumbnail,
+            code,
+            stock,
+            category,
+            owner: user.email
+        }
+    } else {
+        productData = {
+            title,
+            description,
+            price,
+            thumbnail,
+            code,
+            stock,
+            category,
+            owner
+        }
     }
 
     let result = await productsService.createProductsDAO(productData)
-    if (!result) return res.status(404).send({status: "error", message:"Cannot create products"})
+    if (!result) return res.status(404).send({ status: "error", message: "Cannot create products" })
     res.status(200).send({ status: "success", payload: result })
 }
 
@@ -94,9 +110,12 @@ export const getProductsByIdController = async (req, res) => {
 export const updateProductsController = async (req, res) => {
 
     try {
+        const user = req.user;
         let pid = req.params.pid
+        const actualProduct = await productsService.getProductsByIdDAO(pid)
         let productReplace = req.body
         if (!productReplace.title || !productReplace.description || !productReplace.price || !productReplace.thumbnail || !productReplace.code || !productReplace.stock || !productReplace.category) return res.status(400).send({ status: "error", error: "Incomplete values" })
+        if(user.role === "premium" && actualProduct.owner !== user.email) return res.status(400).send({status: "error", message: "Only can update your own products"})
         let result = await productsService.updateProductsDAO({ _id: pid }, productReplace)
         if (!result) return res.status(404).send({ status: "error", message: "The product with this Id cannot be updated because it does not exist" })
         res.status(200).send({ status: "success", payload: result })
@@ -109,18 +128,32 @@ export const updateProductsController = async (req, res) => {
 
 export const deleteProductsController = async (req, res) => {
     try {
+        const user = req.user;
         const pid = req.params.pid;
         const product = await productsService.getProductsByIdDAO(pid);
 
-        if (!product) {
-            return res.status(404).send({ status: "error", message: "The product with this Id does not exist" });
+        if (!product) return res.status(404).send({ status: "error", message: "The product with this Id does not exist" });
+        if (user.role === "premium" && product.owner !== user.email) return res.status(403).send("You don't have permission to delete this product");
+        if (user.role === "admin" && product.owner !== "admin") {
+            const mailOptions = {
+                from: process.env.MAIL_USER,
+                to: product.owner,
+                subject: 'Deleted product | BACKEND ECOMMERCE',
+                text: `Your product ${product.title} with id ${product._id} has been deleted from ecommerce by admin.`,
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    req.logger.error("Error sending mail" + error);
+                    return res.status(500).json({ status: 'error', message: 'Error to send email.' });
+                }
+                req.logger.info('Email sent: ' + info.response);
+                res.status(200).send({ status: 'success', message: 'Email sended succefully.' });
+            });
         }
 
         const result = await productsService.deleteProductsDAO({ _id: pid });
-
-        if (!result) {
-            return res.status(404).send({ status: "error", message: "The product with this Id cannot be deleted because it does not exist"});
-        }
+        if (!result) return res.status(404).send({ status: "error", message: "The product with this Id cannot be deleted because it does not exist" });
 
         res.status(200).send({ status: "success", payload: result });
     } catch (err) {
