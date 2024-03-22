@@ -154,6 +154,7 @@ export const purchaseCartController = async (req, res) => {
 
         const purchasedProducts = [];
         const productsWithNoStock = [];
+        const productsNotPurchased = [];
 
         let ticketAmount = 0;
         cart.products.forEach(product => {
@@ -171,10 +172,26 @@ export const purchaseCartController = async (req, res) => {
             const productId = productInfo.product._id;
             const quantityInCart = productInfo.quantity;
 
+            if (user.role === "premium" && productInfo.product.owner === user.email) {
+                productsNotPurchased.push({
+                    pid: productId,
+                    title: productInfo.product.title,
+                    quantity: quantityInCart,
+                    owner: productInfo.product.owner
+                });
+                continue;
+            }
+
             const stockUpdated = await productsService.updateProductsStockDAO(productId, quantityInCart);
 
             if (!stockUpdated) {
-                productsWithNoStock.push(productInfo.product);
+                productsWithNoStock.push({
+                    pid: productId,
+                    title: productInfo.product.title,
+                    quantity: quantityInCart,
+                    stock: productInfo.product.stock,
+                    owner: productInfo.product.owner
+                });
             } else {
                 const product = await productsService.getProductsByIdDAO(productId);
                 if (product) {
@@ -188,25 +205,35 @@ export const purchaseCartController = async (req, res) => {
         }
 
         if (purchasedProducts.length > 0) {
-            const productsToRemove = productsWithNoStock.map(product => product._id);
-            await cartsService.removeProductsFromCartDAO(cid, productsToRemove);
+            await cartsService.removeProductsFromCartDAO(cid, purchasedProducts);
         }
 
-        let ticket = await ticketsService.generateTicketsDAO(ticketData);
-
-        let additionalMessage = "";
-        if (productsWithNoStock.length > 0) {
-            additionalMessage = "Some products couldn't be purchased due to insufficient stock";
+        if (productsNotPurchased.length > 0) {
+            await cartsService.removeProductsFromCartDAO(cid, productsNotPurchased);
         }
 
-        res.status(200).send({
+        if (purchasedProducts.length <= 0 && productsNotPurchased.length <= 0) {
+            return res.status(400).send({ status: "error", message: "Products for purchase are empty" });
+        }
+
+        let response = {
             status: "success",
             message: "Products purchased successfully",
             purchasedProducts: purchasedProducts,
-            info: additionalMessage,
-            productsWithNoStock: productsWithNoStock,
-            ticket: ticket
-        });
+            ticket: await ticketsService.generateTicketsDAO(ticketData)
+        };
+
+        if (productsWithNoStock.length > 0) {
+            response.info = "Some products couldn't be purchased due to insufficient stock";
+            response.productsWithNoStock = productsWithNoStock;
+        }
+
+        if (productsNotPurchased.length > 0) {
+            response.error = "Cannot purchase your own products";
+            response.productsNotPurchased = productsNotPurchased;
+        }
+
+        res.status(200).send(response);
     } catch (err) {
         res.status(500).send("Server Error: " + err);
     }

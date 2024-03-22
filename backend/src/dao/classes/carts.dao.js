@@ -144,14 +144,16 @@ export default class Carts {
         }
     }
 
-    removeProductsFromCartDAO = async (cid, productIds) => {
+    removeProductsFromCartDAO = async (cid, productsToRemove) => {
         try {
             let cart = await this.getCartsByIdDAO(cid);
-    
+
             if (!cart) {
                 return null;
             }
-            cart.products = cart.products.filter(product => !productIds.includes(product.product.toString()));
+            cart.products = cart.products.filter(product => {
+                return !productsToRemove.find(item => item.pid.toString() === product.product._id.toString());
+            });
             let result = await cart.save();
             this.logger.info(`Products removed from cart with ID ${cid}`);
             return result;
@@ -160,5 +162,5 @@ export default class Carts {
             return null;
         }
     }
-    
+
 }
