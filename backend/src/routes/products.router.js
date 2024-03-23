@@ -6,8 +6,8 @@ export const router = Router()
 
 router.post("/", authenticateJWTAndRole(["premium", "admin"]), createProductsController)
 
-router.get("/", getProductsController)
-router.get("/:pid", getProductsByIdController)
+router.get("/", authenticateJWTAndRole(["admin"]), getProductsController)
+router.get("/:pid", authenticateJWTAndRole(["admin"]), getProductsByIdController)
 
 router.put("/:pid", authenticateJWTAndRole(["premium", "admin"]), updateProductsController)
 
