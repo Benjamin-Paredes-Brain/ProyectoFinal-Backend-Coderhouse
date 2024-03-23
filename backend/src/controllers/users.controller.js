@@ -144,6 +144,10 @@ export const deleteUserController = async (req, res) => {
 
 export const logoutUserController = async (req, res) => {
     try {
+        const user = await usersService.getUserByIdDAO(uid);
+        if (!user) {
+            return res.status(404).send({ status: "error", message: "User not found" });
+        }
         res.clearCookie("authCookie");
         req.logger.info("User logout")
         return res.status(200).send({ status: "success", message: "Logout successful" });

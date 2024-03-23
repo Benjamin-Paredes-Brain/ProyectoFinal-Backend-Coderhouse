@@ -6,7 +6,6 @@ const url = supertest("http://localhost:8080")
 describe("User router test", () => {
 
     let cookie;
-    let uid;
 
     it("Test 1 - [POST] /api/users/register | Register user", async function () {
         const mockUser = {

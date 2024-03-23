@@ -8,6 +8,8 @@ import { router as usersRouter } from "./routes/users.router.js"
 import { router as productsRouter } from "./routes/products.router.js"
 import { router as cartsRouter } from "./routes/carts.router.js"
 import { router as ticketsRouter } from "./routes/tickets.router.js"
+import swaggerJsdoc from "swagger-jsdoc"
+import swaggerUiExpress from "swagger-ui-express"
 
 const app = express()
 
@@ -33,5 +35,22 @@ mongoose.connect(process.env.ENV === "DEVELOPMENT" ? process.env.MONGO_URL_TEST 
         process.exit(1);
     });
 
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.1",
+        info: {
+            title: "Ecommerce API",
+            description: "APIrestful developed during the backend programming course at coderhouse"
+        }
+    },
+    apis: [`${process.cwd()}/src/docs/**/*.yaml`]
+}
+
+const specs = swaggerJsdoc(swaggerOptions)
+app.use("/api/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs, {
+    swaggerOptions: {
+        supportedSubmitMethods: []
+    }
+}))
 
 app.listen(process.env.PORT, () => console.log(`Server running`))
