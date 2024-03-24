@@ -152,6 +152,8 @@ export const purchaseCartController = async (req, res) => {
         const cart = await cartsService.getCartsByIdDAO(cid);
         const purchaser = user.email;
 
+        if(!cart) return res.status(404).send({ status: "error", message: "Cart don´t found" });
+
         const purchasedProducts = [];
         const productsWithNoStock = [];
         const productsNotPurchased = [];

@@ -32,12 +32,12 @@ describe("Product router test", () => {
         const response = await url.post("/api/products").set("Cookie", `${cookie.name}=${cookie.value}`).send(mockProduct);
         pid = response._body.payload._id
         expect(response._body.payload.category).to.be.equal("Test")
-        expect(response.statusCode).to.equal(200);
+        expect(response.statusCode).to.equal(201);
     });
 
     it("Test 2 - [GET] /api/products/ | Get all products", async function () {
         const response = await url.get(`/api/products/`).set("Cookie", `${cookie.name}=${cookie.value}`)
-        expect(response.statusCode).to.equal(201);
+        expect(response.statusCode).to.equal(200);
         expect(response._body.payload.docs).to.be.an("array")
         expect(response._body.payload.totalDocs)
         expect(response._body.payload.limit)

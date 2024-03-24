@@ -48,7 +48,7 @@ export const createProductsController = async (req, res) => {
 
     let result = await productsService.createProductsDAO(productData)
     if (!result) return res.status(404).send({ status: "error", message: "Cannot create products" })
-    res.status(200).send({ status: "success", payload: result })
+    res.status(201).send({ status: "success", payload: result })
 }
 
 export const getProductsController = async (req, res) => {
@@ -83,7 +83,7 @@ export const getProductsController = async (req, res) => {
 
         const baseUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
 
-        return res.status(201).send({
+        return res.status(200).send({
             status: "success",
             payload: result,
             prevLink: result.hasPrevPage ? getPrevLink(baseUrl, result) : null,

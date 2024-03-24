@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha tests/products/products.test.js",
+    "test": "mocha tests/carts/carts.test.js",
     "dev": "nodemon --env-file .env src/app.js"
   },
   "keywords": [],

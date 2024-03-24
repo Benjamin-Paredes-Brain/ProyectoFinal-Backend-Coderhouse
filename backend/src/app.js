@@ -27,7 +27,6 @@ app.use("/api/tickets", ticketsRouter)
 
 mongoose.connect(process.env.ENV === "DEVELOPMENT" ? process.env.MONGO_URL_TEST : process.env.MONGO_URL)
     .then(() => {
-        process.env.ENV === "DEVELOPMENT" && process.env.TEST === "ON" ? mongoose.connection.collection("products").drop(): null;
         console.log("Connected to the database");
     })
     .catch((error) => {

@@ -52,7 +52,7 @@ paths:
               stock: 20
               category: "box"
       responses:
-        "200":
+        "201":
           description: "Products created successfully."
         "400":
           description: "Fields incompleted or not valid"
