@@ -3,8 +3,9 @@ import supertest from "supertest";
 
 const url = supertest("http://localhost:8080");
 
-describe("Cart router test for user role", () => {
-    const cid = "65ff7c2dc49668ea8f3e0481"
+describe("Cart router test for user role (purchase process)", () => {
+    // Se obtiene el carrito del usuario, junto con un producto; ambos creados previamente.
+    const cid = "660072fcf0223d650f853846"
     const pid = "65ff88a0e1094d8023c90480"
     let cookie;
 
@@ -55,7 +56,7 @@ describe("Cart router test for user role", () => {
         expect(productPurchasedQuantity).to.be.equal(3)
     });
 
-    it("Test 5 - [DELETE] /api/carts/:cid | Delete cart", async () => {
+    it("Test 5 - [DELETE] /api/carts/:cid | Clear cart", async () => {
         await url.post(`/api/carts/${cid}/product/${pid}`).set("Cookie", cookie);
         const response = await url.delete(`/api/carts/${cid}`).set("Cookie", cookie);
         expect(response.status).to.equal(200);

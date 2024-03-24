@@ -6,6 +6,7 @@ const url = supertest("http://localhost:8080")
 describe("User router test", () => {
 
     let cookie;
+    let uid;
 
     it("Test 1 - [POST] /api/users/register | Register user", async function () {
         const mockUser = {
@@ -50,12 +51,26 @@ describe("User router test", () => {
 
         const cookieResult = testUser.headers["set-cookie"][0]
         expect(cookieResult).to.be.ok
-        
+
         cookie = {
             name: cookieResult.split("=")[0],
             value: cookieResult.split("=")[1].split(";")[0]
         }
         expect(cookie.name).to.be.ok.and.eql("authCookie")
         expect(cookie.value).to.be.empty
+    })
+
+    after(async function () {
+        // Se realiza login de un usuario creado previamente en la base de datos, con el rol de administrador para no tener problemas con la authenticacion y autorizacion.
+        // Se elimina el producto creado anteriormente.
+        const loginResponse = await url.post("/api/users/login").send({ email: "admin@email.com", password: "123admin" });
+        const cookieResult = loginResponse.headers["set-cookie"][0];
+
+        cookie = {
+            name: cookieResult.split("=")[0],
+            value: cookieResult.split("=")[1].split(";")[0]
+        };
+
+        await url.delete(`/api/users/${uid}`).set("Cookie", [`${cookie.name}=${cookie.value}`] )
     })
 })

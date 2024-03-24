@@ -133,7 +133,10 @@ export const getUsersController = async (req, res) => {
 export const deleteUserController = async (req, res) => {
     try {
         let uid = req.params.uid
+        const user = await usersService.getUserByIdDAO(uid)
+        const cid = user.carts[0]
         let result = await usersService.deleteUserDAO(uid)
+        await cartsService.deleteCartsDAO(cid)
         if (!result) return res.status(404).send({ status: "error", message: `Cannot delete user with id ${uid}` })
         return res.status(200).send({ status: "success", payload: result });
     }
@@ -144,6 +147,7 @@ export const deleteUserController = async (req, res) => {
 
 export const logoutUserController = async (req, res) => {
     try {
+        const uid = req.user._id
         const user = await usersService.getUserByIdDAO(uid);
         if (!user) {
             return res.status(404).send({ status: "error", message: "User not found" });
