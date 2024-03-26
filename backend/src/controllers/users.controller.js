@@ -220,3 +220,36 @@ export const getUserCurrentController = async (req, res) => {
         res.status(500).send("Server error: " + err)
     }
 }
+
+export const deleteUserByEmailController = async (req, res) => {
+    try {
+        let email = req.params.email
+        const current = req.user.email
+        const user = await usersService.getUserByEmailDAO(email)
+        if(current === email) return res.status(400).send({status: "error", message: "Cannot delete yourself"})
+        const cid = user.carts[0]
+        let result = await usersService.deleteUserByEmailDAO(email)
+        await cartsService.deleteCartsDAO(cid)
+        if (!result) return res.status(404).send({ status: "error", message: `Cannot delete user with email ${email}` })
+        return res.status(200).send({ status: "success", payload: result });
+    }
+    catch (err) {
+        res.status(500).send("Server error " + err);
+    }
+}
+
+export const updateUserRoleByEmailController = async (req, res) => {
+    try {
+        let email = req.params.email
+        const role = req.body.role
+        if(role !== "admin" && role !== "premium" && role !== "user") return res.status(400).send({status: "error", message: "Role not allowed"})
+        const current = req.user.email
+        if(current === email) return res.status(400).send({status: "error", message: "Cannot update yourself"})
+        let result = await usersService.updateUserRoleByEmailDAO(email, role)
+        if (!result) return res.status(404).send({ status: "error", message: `Cannot update user role with email ${email}` })
+        return res.status(200).send({ status: "success", payload: result });
+    }
+    catch (err) {
+        res.status(500).send("Server error " + err);
+    }
+}

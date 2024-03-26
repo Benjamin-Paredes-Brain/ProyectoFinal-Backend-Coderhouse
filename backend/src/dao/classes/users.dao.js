@@ -97,4 +97,34 @@ export default class Users {
             return null;
         }
     }
+
+    deleteUserByEmailDAO = async (email) => {
+        try {
+            let result = await usersModel.deleteOne({ email: email })
+            if (!result) return null
+            this.logger.info(`User deleted successfully`)
+            return result;
+        }
+        catch (err) {
+            this.logger.error(`Error deleting user with email ${email}: ${err.message}`)
+            return null;
+        }
+    }
+
+    updateUserRoleByEmailDAO = async (email, role) => {
+        try {
+            let user = await this.getUserByEmailDAO(email)
+            if (!user) {
+                return res.status(404).send({ status: "error", message: "user not found" });
+            }
+            let result = await usersModel.updateOne({ email: email }, {$set: {role: role}})
+            if (!result) return null
+            this.logger.info(`User deleted successfully`)
+            return result;
+        }
+        catch (err) {
+            this.logger.error(`Error deleting user with email ${email}: ${err.message}`)
+            return null;
+        }
+    }
 }
