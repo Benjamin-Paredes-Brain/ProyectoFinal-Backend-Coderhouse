@@ -9,7 +9,7 @@ router.post("/:cid/product/:pid", authenticateJWTAndRole(["user", "premium"]), a
 router.post("/purchase/:cid", authenticateJWTAndRole(["user", "premium"]), purchaseCartController)
 
 router.get("/", authenticateJWTAndRole(["admin"]), getCartsController)
-router.get("/:cid", authenticateJWTAndRole(["admin"]), getCartsByIdController)
+router.get("/:cid", authenticateJWTAndRole(["user", "premium", "admin"]), getCartsByIdController)
 
 router.put(":/cid", authenticateJWTAndRole(["admin"]), updateCartsController)
 router.put("/quantity/:cid/product/:pid", authenticateJWTAndRole(["user", "premium"]), updateQuantityProductsInCartsController)

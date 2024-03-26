@@ -198,3 +198,25 @@ export const clearUsersController = async (req, res) => {
         return res.status(500).send({ status: "error", message: "Server error: " + err });
     }
 }
+
+export const getUserCartController = async (req, res) => {
+    try {
+        let cid = req.user.carts[0]
+        let result = await cartsService.getCartsByIdDAO(cid)
+        if (!result) return res.status(404).send({ status: "error", message: "Cannot get cart with this id because doesn´t exists" })
+        res.status(200).send({ status: "success", payload: result })
+    } catch (err) {
+        res.status(500).send("Server error: " + err)
+    }
+}
+
+export const getUserCurrentController = async (req, res) => {
+    try {
+        let uid = req.user._id
+        let result = await usersService.getUserByIdDAO(uid)
+        if (!result) return res.status(404).send({ status: "error", message: "Cannot get user" })
+        res.status(200).send({ status: "success", payload: result })
+    } catch (err) {
+        res.status(500).send("Server error: " + err)
+    }
+}

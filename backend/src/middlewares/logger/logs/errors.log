@@ -1,0 +1,61 @@
+error: Error while fetching product with ID :pid: Cast to ObjectId failed for value ":pid" (type string) at path "_id" for model "products"
+error: Error while fetching product with ID :pid: Cast to ObjectId failed for value ":pid" (type string) at path "_id" for model "products"
+error: Error while fetching product with ID undefined: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "products"
+error: Error while fetching product with ID undefined: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "products"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while updating product quantity in cart: res is not defined
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while updating product quantity in cart: res is not defined
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while updating product quantity in cart: res is not defined
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while updating product quantity in cart: res is not defined
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while updating product quantity in cart: res is not defined
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while updating product quantity in cart: res is not defined
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while updating product quantity in cart: res is not defined
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while updating product quantity in cart: res is not defined
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while updating product quantity in cart: res is not defined
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while updating product quantity in cart: res is not defined
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while updating product quantity in cart: res is not defined
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while updating product quantity in cart: res is not defined
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while updating product quantity in cart: res is not defined
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'undefined' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while fetching cart: Cast to ObjectId failed for value "{ _id: 'null' }" (type Object) at path "_id" for model "carts"
+error: Error while removing product with ID 6602458fb26 from cart with ID 6601f982cb4fe89d06260a51: Cast to ObjectId failed for value "6602458fb26" (type string) at path "product" for model "carts"
+error: Product stock is not enough
+error: Product stock is not enough
+error: Product stock is not enough

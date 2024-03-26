@@ -10,10 +10,12 @@ import { router as cartsRouter } from "./routes/carts.router.js"
 import { router as ticketsRouter } from "./routes/tickets.router.js"
 import swaggerJsdoc from "swagger-jsdoc"
 import swaggerUiExpress from "swagger-ui-express"
+import cors from "cors"
 
 const app = express()
 
 app.use(express.json())
+app.use(cors({credentials: true, origin: "http://localhost:5173"}))
 app.use(express.urlencoded({ extended: true }))
 app.use(middlewareLogger)
 app.use(cookieParser(process.env.COOKIE_SIGN))
@@ -52,4 +54,4 @@ app.use("/api/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs, {
     }
 }))
 
-app.listen(process.env.PORT, () => console.log(`Server running`))
+app.listen(process.env.PORT || 8080, () => console.log(`Server running`))

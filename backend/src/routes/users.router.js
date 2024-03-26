@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { registerUserController, loginUserController, getUserProfile, updateUserController, getUsersController, deleteUserController, logoutUserController, clearUsersController } from "../controllers/users.controller.js";
+import { registerUserController, loginUserController, getUserProfile, updateUserController, getUsersController, deleteUserController, logoutUserController, clearUsersController, getUserCartController, getUserCurrentController } from "../controllers/users.controller.js";
 import { authenticateJWTAndRole } from "../middlewares/auth/auth.JWT.Role.js";
 
 export const router = Router()
@@ -12,3 +12,5 @@ router.put("/:uid", authenticateJWTAndRole(["admin"]), updateUserController)
 router.get("/", authenticateJWTAndRole(["admin"]), getUsersController)
 router.delete("/:uid", authenticateJWTAndRole(["admin"]), deleteUserController)
 router.delete("/", authenticateJWTAndRole(["admin"]), clearUsersController)
+router.get("/cart", authenticateJWTAndRole(["user"]), getUserCartController)
+router.get("/current", authenticateJWTAndRole(["user"]), getUserCurrentController)
